@@ -10,6 +10,7 @@ services:
       - ./go.mod:/app/go.mod
       - ./go.sum:/app/go.sum
       - ./.air.toml:/app/.air.toml
+      - ./boot.sh:/app/boot.sh
       - ./gen/:/app/gen/
     depends_on:
       - db

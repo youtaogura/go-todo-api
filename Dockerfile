@@ -1,11 +1,13 @@
 FROM golang:1.22.1
 
-RUN go install github.com/cosmtrek/air@v1.29.0
-
 WORKDIR /app
+
+RUN go install github.com/cosmtrek/air@v1.29.0
+RUN apt-get update && apt-get install -y netcat-openbsd
 
 COPY go.mod ./
 COPY go.sum ./
 RUN go mod download
 
-CMD ["air", "-c", ".air.toml"]
+COPY boot.sh ./
+CMD ["sh", "boot.sh"]
