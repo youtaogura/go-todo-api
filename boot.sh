@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # データベースが起動するまで待機
-until nc -z -v -w30 $MYSQL_HOST $MYSQL_PORT
+until nc -z -v -w30 $DB_HOST $DB_PORT
 do
   echo "Waiting for database connection..."
   sleep 1
