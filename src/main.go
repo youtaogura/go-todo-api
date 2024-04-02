@@ -47,8 +47,8 @@ func setupRoutes(router *mux.Router) {
 			SessionService: service.SessionService{DB: db},
 		},
 	}
-	router.HandleFunc(r("login"), authHandler.Login).Methods("POST")
-	router.HandleFunc(r("logout"), authMW(authHandler.Logout)).Methods("POST")
+	go router.HandleFunc(r("login"), authHandler.Login).Methods("POST")
+	go router.HandleFunc(r("logout"), authMW(authHandler.Logout)).Methods("POST")
 
 	/** User routes */
 	userHandler := handler.UserHandler{
@@ -57,17 +57,17 @@ func setupRoutes(router *mux.Router) {
 			AuthService: service.AuthService{DB: db},
 		},
 	}
-	router.HandleFunc(r("users"), userHandler.ListUsers).Methods("GET")
-	router.HandleFunc(r("users", "register"), userHandler.RegisterUser).Methods("POST")
+	go router.HandleFunc(r("users"), userHandler.ListUsers).Methods("GET")
+	go router.HandleFunc(r("users", "register"), userHandler.RegisterUser).Methods("POST")
 
 	/** Todo routes */
 	todoHandler := handler.TodoHandler{
 		TodoService: service.TodoService{DB: db},
 	}
-	router.HandleFunc(r("todos"), authMW(todoHandler.NewTodo)).Methods("POST")
-	router.HandleFunc(r("todos"), authMW(todoHandler.ListTodos)).Methods("GET")
-	router.HandleFunc(r("todos", "{id}"), authMW(todoHandler.UpdateTodo)).Methods("PUT")
-	router.HandleFunc(r("todos", "{id}"), authMW(todoHandler.DeleteTodo)).Methods("DELETE")
+	go router.HandleFunc(r("todos"), authMW(todoHandler.NewTodo)).Methods("POST")
+	go router.HandleFunc(r("todos"), authMW(todoHandler.ListTodos)).Methods("GET")
+	go router.HandleFunc(r("todos", "{id}"), authMW(todoHandler.UpdateTodo)).Methods("PUT")
+	go router.HandleFunc(r("todos", "{id}"), authMW(todoHandler.DeleteTodo)).Methods("DELETE")
 }
 
 func logMW(next http.Handler) http.Handler {

@@ -5,7 +5,7 @@ import (
 	"go_todo/src/model"
 	"go_todo/src/service"
 	"go_todo/src/types"
-	request_util "go_todo/src/util"
+	"go_todo/src/util"
 	"net/http"
 	"strconv"
 
@@ -19,13 +19,13 @@ type TodoHandler struct {
 func (h *TodoHandler) ListTodos(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(types.UserKey{}).(*model.User)
 	todos := h.TodoService.ListTodos(user)
-	request_util.ReturnJson(w, request_util.ReturnJsonOptions{
+	util.ReturnJson(w, util.ReturnJsonOptions{
 		Content: todos,
 	})
 }
 
 func (h *TodoHandler) NewTodo(w http.ResponseWriter, r *http.Request) {
-	user := request_util.RequestUser(r)
+	user := util.RequestUser(r)
 	var body types.NewTodoRequest
 	json.NewDecoder(r.Body).Decode(&body)
 
@@ -35,7 +35,7 @@ func (h *TodoHandler) NewTodo(w http.ResponseWriter, r *http.Request) {
 	}
 
 	todo := h.TodoService.NewTodo(user, body)
-	request_util.ReturnJson(w, request_util.ReturnJsonOptions{
+	util.ReturnJson(w, util.ReturnJsonOptions{
 		Content: todo,
 		Status: http.StatusCreated,
 	})
@@ -57,7 +57,7 @@ func (h *TodoHandler) UpdateTodo(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	request_util.ReturnJson(w, request_util.ReturnJsonOptions{
+	util.ReturnJson(w, util.ReturnJsonOptions{
 		Content: todo,
 	})
 }

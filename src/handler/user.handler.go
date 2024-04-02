@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"go_todo/src/service"
 	"go_todo/src/types"
-	request_util "go_todo/src/util"
+	"go_todo/src/util"
 	"net/http"
 )
 
@@ -15,7 +15,7 @@ type UserHandler struct {
 
 func (h *UserHandler) ListUsers(w http.ResponseWriter, r *http.Request) {
  	users := h.UserService.ListUsers()
-	request_util.ReturnJson(w, request_util.ReturnJsonOptions{
+	util.ReturnJson(w, util.ReturnJsonOptions{
 		Content: users,
 	})
 }
@@ -30,7 +30,7 @@ func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	request_util.ReturnJson(w, request_util.ReturnJsonOptions{
+	util.ReturnJson(w, util.ReturnJsonOptions{
 		Status: http.StatusCreated,
 	})
 }

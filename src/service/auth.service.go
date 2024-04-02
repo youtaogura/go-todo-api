@@ -29,9 +29,9 @@ func (h *AuthService) Login(body types.LoginRequest) *types.LoginResult {
 	}
 }
 
-func (h *AuthService) Logout(user *model.User, token string) bool {
+func (h *AuthService) Logout(user *model.User, token string, ch chan bool) {
 	ok := h.SessionService.DeleteSession(user, token)
-	return ok
+	ch <- ok
 }
 
 func (h *AuthService) Encrypt(s string) string {

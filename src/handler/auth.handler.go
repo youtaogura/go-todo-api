@@ -5,7 +5,7 @@ import (
 	"go_todo/src/model"
 	"go_todo/src/service"
 	"go_todo/src/types"
-	request_util "go_todo/src/util"
+	"go_todo/src/util"
 	"net/http"
 
 	"gorm.io/gorm"
@@ -27,7 +27,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 	}
 
 	setCookie(w, res.Token)
-	request_util.ReturnJson(w, request_util.ReturnJsonOptions{
+	util.ReturnJson(w, util.ReturnJsonOptions{
 		Content: map[string]interface{}{
 			"id": res.User.ID,
 			"username": res.User.Username,
@@ -43,14 +43,19 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	ok := h.AuthService.Logout(user, cookie.Value)
+	logoutChan := make(chan bool)
+	var ok bool
+	util.Wait(
+		func() { h.AuthService.Logout(user, cookie.Value, logoutChan) },
+		func() { deleteCookie(w) },
+		func() { ok = <- logoutChan },
+	)
 	if !ok {
 		w.WriteHeader(http.StatusUnauthorized)
 		return
 	}
 
-	deleteCookie(w)
-	request_util.ReturnJson(w, request_util.ReturnJsonOptions{})
+	util.ReturnJson(w, util.ReturnJsonOptions{})
 }
 
 func setCookie(w http.ResponseWriter, token string) {
