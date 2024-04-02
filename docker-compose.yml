@@ -1,0 +1,28 @@
+version: '3.8'
+services:
+  app:
+    build: .
+    container_name: go-todo-api
+    ports:
+      - '8080:8080'
+    volumes:
+      - ./src:/app/src
+      - ./go.mod:/app/go.mod
+      - ./go.sum:/app/go.sum
+      - ./.air.toml:/app/.air.toml
+      - ./gen/:/app/gen/
+    depends_on:
+      - db
+    env_file:
+      - .env
+  db:
+    image: mysql:8.0
+    container_name: go-todo-db
+    ports:
+      - '3306:3306'
+    env_file: .env
+    volumes:
+      - db-data:/var/lib/mysql
+
+volumes:
+  db-data:
