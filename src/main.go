@@ -81,8 +81,6 @@ func logMW(next http.Handler) http.Handler {
 func authMW(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ss := service.SessionService{DB: database.GetConnection()}
-		bearer := r.Header.Get("Authorization")
-		fmt.Println(bearer)
 		accessToken := strings.Split(r.Header.Get("Authorization"), " ")[1]
 		user := ss.SessionUser(accessToken)
 		if user == nil || user.ID == 0 {

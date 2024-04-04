@@ -7,6 +7,7 @@ import (
 	"go_todo/src/types"
 	"go_todo/src/util"
 	"net/http"
+	"strings"
 
 	"gorm.io/gorm"
 )
@@ -37,16 +38,11 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 
 func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	user := r.Context().Value(types.UserKey{}).(*model.User)
-	cookie, err := r.Cookie("access_token")
-	if err != nil {
-		w.WriteHeader(http.StatusUnauthorized)
-		return
-	}
-
+	accessToken := strings.Split(r.Header.Get("Authorization"), " ")[1]
 	logoutChan := make(chan bool)
 	var ok bool
 	util.Wait(
-		func() { h.AuthService.Logout(user, cookie.Value, logoutChan) },
+		func() { h.AuthService.Logout(user, accessToken, logoutChan) },
 		func() { deleteAuthHeader(w) },
 		func() { ok = <- logoutChan },
 	)
