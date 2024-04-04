@@ -30,6 +30,9 @@ func (h *UserHandler) RegisterUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	res := h.AuthService.Login(body)
+	w.Header().Set("Authorization", "Bearer " + res.Token)
+
 	util.ReturnJson(w, util.ReturnJsonOptions{
 		Status: http.StatusCreated,
 	})
