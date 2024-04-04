@@ -26,7 +26,7 @@ func (h *AuthHandler) Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	setCookie(w, res.Token)
+	setAuthHeader(w, res.Token)
 	util.ReturnJson(w, util.ReturnJsonOptions{
 		Content: map[string]interface{}{
 			"id": res.User.ID,
@@ -47,7 +47,7 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	var ok bool
 	util.Wait(
 		func() { h.AuthService.Logout(user, cookie.Value, logoutChan) },
-		func() { deleteCookie(w) },
+		func() { deleteAuthHeader(w) },
 		func() { ok = <- logoutChan },
 	)
 	if !ok {
@@ -58,19 +58,10 @@ func (h *AuthHandler) Logout(w http.ResponseWriter, r *http.Request) {
 	util.ReturnJson(w, util.ReturnJsonOptions{})
 }
 
-func setCookie(w http.ResponseWriter, token string) {
-	http.SetCookie(w, &http.Cookie{
-		Name:  "access_token",
-		Value: token,
-		Path:  "/",
-	})
+func setAuthHeader(w http.ResponseWriter, token string) {
+	w.Header().Set("Authorization", "Bearer " + token)
 }
 
-func deleteCookie(w http.ResponseWriter) {
-	http.SetCookie(w, &http.Cookie{
-		Name:   "access_token",
-		Value:  "",
-		Path:   "/",
-		MaxAge: -1,
-	})
+func deleteAuthHeader(w http.ResponseWriter) {
+	w.Header().Del("Authorization")
 }

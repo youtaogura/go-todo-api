@@ -10,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/gorilla/mux"
 )
@@ -80,13 +81,10 @@ func logMW(next http.Handler) http.Handler {
 func authMW(next http.HandlerFunc) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ss := service.SessionService{DB: database.GetConnection()}
-		cookie, err := r.Cookie("access_token")
-		if err != nil {
-			w.WriteHeader(http.StatusUnauthorized)
-			w.Write([]byte("Unauthorized"))
-			return
-		}
-		user := ss.SessionUser(cookie.Value)
+		bearer := r.Header.Get("Authorization")
+		fmt.Println(bearer)
+		accessToken := strings.Split(r.Header.Get("Authorization"), " ")[1]
+		user := ss.SessionUser(accessToken)
 		if user == nil || user.ID == 0 {
 			w.WriteHeader(http.StatusUnauthorized)
 			w.Write([]byte("Unauthorized"))
